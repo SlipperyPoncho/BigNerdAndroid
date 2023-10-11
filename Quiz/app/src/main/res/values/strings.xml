@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Quiz</string>
+    <string name="question_text">My name is Artem</string>
+    <string name="true_button">True</string>
+    <string name="false_button">False</string>
+    <string name="correct_toast">Correct!</string>
+    <string name="incorrect_toast">Incorrect!</string>
+    <string name="question_my_name">My name is Anton</string>
+    <string name="question_baldur">Baldur\'s Gate 3 is the best game</string>
+    <string name="question_shadowheart">Shadowheart is the best girl</string>
+    <string name="question_raphael">Raphael is an angel</string>
+    <string name="question_dostoevsky">Dostoevsky wrote War and Peace</string>
+    <string name="next_button">Next</string>
+    <string name="prev_button">Prev</string>
+    <string name="prevBtnText">Prev</string>
+    <string name="nextBtnText">Next</string>
+</resources>
