@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
         if (resultCode != Activity.RESULT_OK)
             return
         if (requestCode == REQUEST_CODE_CHEAT)
-            quizViewModel.isCheater = data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false) ?: false
+            quizViewModel.currentQuestionCheated = data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false) ?: false
     }
 
     override fun onStart() {
@@ -118,7 +118,7 @@ class MainActivity : AppCompatActivity() {
         falseBtn.isEnabled = false
         quizViewModel.allAnswers += 1
 
-        if (quizViewModel.isCheater)
+        if (quizViewModel.currentQuestionCheated)
             Toast.makeText(this, R.string.judgment_toast, Toast.LENGTH_SHORT).show()
         else if (userAnswer == quizViewModel.currentQuestionAnswer) {
             Toast.makeText(this, R.string.correct_toast, Toast.LENGTH_SHORT).show()

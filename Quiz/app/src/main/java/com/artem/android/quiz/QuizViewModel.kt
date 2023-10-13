@@ -16,13 +16,15 @@ class QuizViewModel : ViewModel() {
     private var currentIndex = 0
     var allAnswers: Int = 0
     var correctAnswers: Int = 0
-    var isCheater = false
 
     val currentQuestionAnswer: Boolean
         get() = questionList[currentIndex].answer
     var currentQuestionAnswered: Boolean
         get() = questionList[currentIndex].isAnswered
         set(value) { questionList[currentIndex].isAnswered = value }
+    var currentQuestionCheated: Boolean
+        get() = questionList[currentIndex].isCheated
+        set(value) { questionList[currentIndex].isCheated = value }
     val currentQuestionText: Int
         get() = questionList[currentIndex].textResId
 
