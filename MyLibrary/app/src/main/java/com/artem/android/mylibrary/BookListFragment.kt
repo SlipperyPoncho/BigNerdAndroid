@@ -1,8 +1,12 @@
 package com.artem.android.mylibrary
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
@@ -13,16 +17,29 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.util.UUID
 
 private const val TAG = "BookListFragment"
 
 class BookListFragment : Fragment() {
+    interface Callbacks { fun onBookSelected(bookId: UUID) }
 
+    private var callbacks: Callbacks? = null
     private lateinit var bookRecyclerView: RecyclerView
     private var adapter: BookAdapter? = BookAdapter(emptyList())
 
     private val bookListViewModel: BookListViewModel by lazy {
         ViewModelProvider(this)[BookListViewModel::class.java]
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        callbacks = context as Callbacks?
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
@@ -51,6 +68,29 @@ class BookListFragment : Fragment() {
         )
     }
 
+    override fun onDetach() {
+        super.onDetach()
+        callbacks = null
+    }
+
+    // No menu bug or i am just an idiot (most likely)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.fragment_book_list, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.new_book -> {
+                val book = Book()
+                bookListViewModel.addBook(book)
+                callbacks?.onBookSelected(book.id)
+                true
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
+    }
+
     private fun updateUI(books: List<Book>) {
         adapter = BookAdapter(books)
         bookRecyclerView.adapter = adapter
@@ -73,7 +113,7 @@ class BookListFragment : Fragment() {
         }
 
         override fun onClick(v: View) {
-            Toast.makeText(context, "${book.title} pressed!", Toast.LENGTH_SHORT).show()
+            callbacks?.onBookSelected(book.id)
         }
     }
 

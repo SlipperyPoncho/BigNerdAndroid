@@ -9,4 +9,14 @@
     <string name="book_title">Book Title</string>
     <string name="book_author">Book author</string>
     <string name="book_read">Read</string>
+    <string name="new_book">New Book</string>
+    <string name="book_rating_text">Rate this book</string>
+    <string name="book_review_text">Review it</string>
+    <string name="book_review">%1$s! The book was reviewed on %2$s. %3$s, and %4$s</string>
+    <string name="book_reviewed">The book has been reviewed</string>
+    <string name="book_not_reviewed">The book has not reviewed</string>
+    <string name="book_no_rating">there is no rating.</string>
+    <string name="book_rating">the rating is %s.</string>
+    <string name="book_review_subject">MyLibraryBook Review</string>
+    <string name="send_review">Send book review via</string>
 </resources>

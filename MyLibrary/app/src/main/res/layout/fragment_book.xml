@@ -36,4 +36,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/book_read_label"/>
+
+    <Button
+        android:id="@+id/book_rating"
+        android:layout_width="wrap_content"
+        android:layout_gravity="center"
+        android:layout_height="wrap_content"
+        android:text="@string/book_rating_text" />
+
+    <Button
+        android:id="@+id/book_review"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/book_review_text" />
+
 </LinearLayout>
