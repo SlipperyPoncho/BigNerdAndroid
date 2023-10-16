@@ -1,5 +1,6 @@
 package com.artem.android.mylibrary
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -7,6 +8,7 @@ import android.content.pm.ResolveInfo
 import android.net.Uri
 import android.os.Bundle
 import android.provider.ContactsContract
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.text.format.DateFormat
@@ -17,9 +19,13 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.ImageView
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import java.io.File
 import java.util.Date
 import java.util.UUID
 
@@ -28,6 +34,7 @@ private const val ARG_BOOK_ID = "book_id"
 private const val DIALOG_DATE = "DialogDate"
 private const val REQUEST_DATE = 0
 private const val REQUEST_CONTACT = 1
+private const val REQUEST_PHOTO = 2
 private const val DATE_FORMAT = "EEE, MMM, dd"
 
 class BookFragment: Fragment(), DatePickerFragment.Callbacks {
@@ -39,6 +46,10 @@ class BookFragment: Fragment(), DatePickerFragment.Callbacks {
     private lateinit var readCheckBox: CheckBox
     private lateinit var reviewButton: Button
     private lateinit var ratingButton: Button
+    private lateinit var photoButton: ImageButton
+    private lateinit var photoView: ImageView
+    private lateinit var photoFile: File
+    private lateinit var photoUri: Uri
 
     private val bookDetailViewModel: BookDetailViewModel by lazy {
         ViewModelProvider(this)[BookDetailViewModel::class.java]
@@ -62,6 +73,8 @@ class BookFragment: Fragment(), DatePickerFragment.Callbacks {
         readCheckBox = view.findViewById(R.id.book_read) as CheckBox
         reviewButton = view.findViewById(R.id.book_review) as Button
         ratingButton = view.findViewById(R.id.book_rating) as Button
+        photoButton = view.findViewById(R.id.book_camera) as ImageButton
+        photoView = view.findViewById(R.id.book_photo) as ImageView
 
         return view
     }
@@ -73,6 +86,10 @@ class BookFragment: Fragment(), DatePickerFragment.Callbacks {
             Observer {
                 book -> book?.let {
                     this.book = book
+                    photoFile = bookDetailViewModel.getPhotoFile(book)
+                    photoUri = FileProvider.getUriForFile(requireActivity(),
+                        "com.artem.android.mylibrary.fileprovider",
+                                photoFile)
                     updateUI()
                 }
             }
@@ -133,10 +150,36 @@ class BookFragment: Fragment(), DatePickerFragment.Callbacks {
             }.also { intent -> startActivity(intent) }
         }
 
+        photoView.setOnClickListener {
+            val zoomDialog = PictureZoomFragment.newInstance(book.photoFileName)
+            fragmentManager?.let { it1 -> zoomDialog.show(it1, null) }
+        }
+
         ratingButton.apply {
             val pickContactIntent = Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI)
             setOnClickListener {
                 startActivityForResult(pickContactIntent, REQUEST_CONTACT)
+            }
+        }
+
+        photoButton.apply {
+            val packageManager: PackageManager = requireActivity().packageManager
+            val captureImage = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+
+            setOnClickListener{
+                captureImage.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
+                val cameraActivities: List<ResolveInfo> = packageManager.queryIntentActivities(
+                    captureImage,
+                    PackageManager.MATCH_DEFAULT_ONLY
+                )
+                for (cameraActivity in cameraActivities) {
+                    requireActivity().grantUriPermission(
+                        cameraActivity.activityInfo.packageName,
+                        photoUri,
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                    )
+                }
+                startActivityForResult(captureImage, REQUEST_PHOTO)
             }
         }
     }
@@ -144,6 +187,11 @@ class BookFragment: Fragment(), DatePickerFragment.Callbacks {
     override fun onStop() {
         super.onStop()
         bookDetailViewModel.saveBook(book)
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        requireActivity().revokeUriPermission(photoUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
     }
 
     override fun onDateSelected(date: Date) {
@@ -161,6 +209,17 @@ class BookFragment: Fragment(), DatePickerFragment.Callbacks {
         }
         if (book.rating.isNotEmpty()) {
             ratingButton.text = book.rating
+        }
+        updatePhotoView()
+    }
+
+    private fun updatePhotoView() {
+        val pictureUtils = PictureUtils()
+        if (photoFile.exists()) {
+            val bitmap = pictureUtils.getScaledBitmap(photoFile.path, requireActivity())
+            photoView.setImageBitmap(bitmap)
+        } else {
+            photoView.setImageDrawable(null)
         }
     }
 
@@ -190,10 +249,15 @@ class BookFragment: Fragment(), DatePickerFragment.Callbacks {
                     ratingButton.text = rating
                 }
             }
+            requestCode == REQUEST_PHOTO -> {
+                requireActivity().revokeUriPermission(photoUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                updatePhotoView()
+            }
         }
     }
 
     // Strings are just random maybe improve it later
+    @SuppressLint("StringFormatInvalid")
     private fun getBookReview(): String {
         val reviewedString = if (book.isRead) {
             getString(R.string.book_reviewed)

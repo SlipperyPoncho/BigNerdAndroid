@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.Room
 import com.artem.android.mylibrary.database.BookDatabase
 import com.artem.android.mylibrary.database.migration_1_2
+import java.io.File
 import java.util.UUID
 import java.util.concurrent.Executors
 
@@ -19,6 +20,7 @@ class BookRepository private constructor(context: Context) {
 
     private val bookDao = database.bookDao()
     private val executor = Executors.newSingleThreadExecutor()
+    private val filesDir = context.applicationContext.filesDir
 
     fun getBooks(): LiveData<List<Book>> = bookDao.getBooks()
     fun getBook(id: UUID): LiveData<Book?> = bookDao.getBook(id)
@@ -32,6 +34,8 @@ class BookRepository private constructor(context: Context) {
             bookDao.addBook(book)
         }
     }
+
+    fun getPhotoFile(book: Book): File = File(filesDir, book.photoFileName)
 
     companion object {
         private var INSTANCE: BookRepository? = null

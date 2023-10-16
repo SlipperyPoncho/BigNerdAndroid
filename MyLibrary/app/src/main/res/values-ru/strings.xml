@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Моя библиотека</string>
+    <string name="book_title_hint">Введите название книги…</string>
+    <string name="book_title_label">Название</string>
+    <string name="book_author_label">Автор</string>
+    <string name="book_publication_date_label">Дата публикации</string>
+    <string name="book_read_label">Прочитано</string>
+    <string name="book_author_hint">Введите имя автора</string>
+    <string name="book_title">Название книги</string>
+    <string name="book_author">Автор книги</string>
+    <string name="book_read">Прочитано</string>
+    <string name="new_book">Новая книга</string>
+    <string name="book_rating_text">Выбрать критика</string>
+    <string name="book_review_text">Написать обзор</string>
+    <string name="book_review">%1$s! Отзыв о книге был написан %2$s. %3$s, и %4$s</string>
+    <string name="book_reviewed">Отзыв по книге был написан</string>
+    <string name="book_not_reviewed">Отзыв по книге не был написан</string>
+    <string name="book_no_rating">рейтинга нет</string>
+    <string name="book_rating">рейтинг книги - </string>
+    <string name="book_review_subject">МояБиблиотека отзыв</string>
+    <string name="send_review">Отправить отзыв через</string>
+</resources>

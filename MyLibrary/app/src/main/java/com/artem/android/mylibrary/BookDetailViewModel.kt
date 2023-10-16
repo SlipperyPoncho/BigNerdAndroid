@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.switchMap
+import java.io.File
 import java.util.UUID
 
 class BookDetailViewModel: ViewModel() {
@@ -21,5 +22,9 @@ class BookDetailViewModel: ViewModel() {
 
     fun saveBook(book: Book) {
         bookRepository.updateBook(book)
+    }
+
+    fun getPhotoFile(book: Book): File {
+        return bookRepository.getPhotoFile(book)
     }
 }
