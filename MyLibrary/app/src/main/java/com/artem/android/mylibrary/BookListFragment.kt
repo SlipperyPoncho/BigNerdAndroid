@@ -72,8 +72,7 @@ class BookListFragment : Fragment() {
         super.onDetach()
         callbacks = null
     }
-
-    // No menu bug or i am just an idiot (most likely)
+    
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.fragment_book_list, menu)
